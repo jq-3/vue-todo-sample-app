@@ -19,11 +19,8 @@
       <!-- Right side -->
       <div class="level-right">
         <b-field>
-          <b-radio-button v-model="selectedStatus" name="status-filter" native-value="">
-            All
-          </b-radio-button>
           <b-radio-button
-            v-for="status in statuses"
+            v-for="status in statusesWithAll"
             v-model="selectedStatus"
             :native-value="status.code"
             :key="status.code"
@@ -96,6 +93,9 @@ export default {
     };
   },
   computed: {
+    statusesWithAll() {
+      return [{ code: '', label: 'All' }, ...this.statuses];
+    },
     filteredTodos() {
       if (this.selectedStatus === '' && this.searchText === '') {
         return this.todos;
