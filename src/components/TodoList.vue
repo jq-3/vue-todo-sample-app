@@ -13,11 +13,6 @@
             <p class="control">
               <b-input v-model="searchText" placeholder="Search..." type="search" icon="search" />
             </p>
-            <p class="control">
-              <button class="button">
-                Search
-              </button>
-            </p>
           </div>
         </div>
       </div>
