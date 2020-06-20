@@ -16,13 +16,13 @@
             </b-table-column>
             <b-table-column label="Status" centered width="120">
               <b-select v-model="todo.row.status" placeholder="Status">
-                <option value="1">Todo</option>
-                <option value="2">Doing</option>
-                <option value="3">Done</option>
+                <option v-for="status in statuses" :value="status.code" :key="status.code">
+                  {{ status.label }}
+                </option>
               </b-select>
             </b-table-column>
             <b-table-column label="Delete" centered width="80">
-              <b-button @click="deleteTodo(todo.index, todo)">
+              <b-button @click="deleteTodo(todo.index)">
                 <b-icon icon="trash" size="is-small"></b-icon>
               </b-button>
             </b-table-column>
@@ -48,17 +48,22 @@
 export default {
   data() {
     return {
+      statuses: [
+        { code: 'todo', label: 'Todo' },
+        { code: 'doing', label: 'Doing' },
+        { code: 'done', label: 'Done' },
+      ],
       todos: [
-        { name: 'Do the dishes', status: 1 },
-        { name: 'Take out the trash', status: 2 },
-        { name: 'Finish doing laundry', status: 3 },
+        { name: 'Do the dishes', status: 'todo' },
+        { name: 'Take out the trash', status: 'doing' },
+        { name: 'Finish doing laundry', status: 'done' },
       ],
       newTodo: '',
     };
   },
   methods: {
     addTodo() {
-      this.todos.push({ name: this.newTodo, status: 1 });
+      this.todos.push({ name: this.newTodo, status: 'todo' });
       this.newTodo = '';
     },
     deleteTodo(index) {
