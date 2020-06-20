@@ -10,19 +10,19 @@
     <div class="container">
       <div>
         <b-table :data="todos" striped hoverable>
-          <template slot-scope="props">
+          <template v-slot="todo">
             <b-table-column field="name" label="name">
-              {{ props.row.name }}
+              {{ todo.row.name }}
             </b-table-column>
             <b-table-column label="Status" centered width="120">
-              <b-select v-model="props.row.status" placeholder="Status">
+              <b-select v-model="todo.row.status" placeholder="Status">
                 <option value="1">Todo</option>
                 <option value="2">Doing</option>
                 <option value="3">Done</option>
               </b-select>
             </b-table-column>
             <b-table-column label="Delete" centered width="80">
-              <b-button @click="deleteTodo(props.index)">
+              <b-button @click="deleteTodo(todo.index, todo)">
                 <b-icon icon="trash" size="is-small"></b-icon>
               </b-button>
             </b-table-column>
