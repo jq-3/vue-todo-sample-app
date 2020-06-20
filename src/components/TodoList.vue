@@ -100,6 +100,7 @@ export default {
       if (this.selectedStatus === '' && this.searchText === '') {
         return this.todos;
       }
+
       return this.todos.filter(todo => {
         let display = true;
         if (this.searchText !== '') {
@@ -114,7 +115,11 @@ export default {
   },
   methods: {
     addTodo() {
-      this.todos.push({ name: this.newTodo, status: 'todo' });
+      if (this.newTodo.trim() === '') {
+        return;
+      }
+
+      this.todos.push({ name: this.newTodo.trim(), status: 'todo' });
       this.newTodo = '';
     },
     deleteTodo(index) {
