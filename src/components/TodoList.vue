@@ -44,7 +44,7 @@
     <div class="container">
       <b-table :data="filteredTodos" striped hoverable>
         <template v-slot="todo">
-          <b-table-column field="name" label="name">
+          <b-table-column field="name" label="Name">
             {{ todo.row.name }}
           </b-table-column>
           <b-table-column label="Status" centered width="120">
