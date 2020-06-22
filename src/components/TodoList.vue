@@ -5,7 +5,7 @@
       <div class="level-left">
         <div class="level-item">
           <p class="subtitle is-5">
-            <strong>{{ filteredTodos.length }}</strong> Todos
+            <strong>{{ filteredTodos.length }}</strong> Item(s)
           </p>
         </div>
         <div class="level-item">
@@ -33,16 +33,25 @@
     </div>
     <div class="container">
       <form @submit.prevent="addTodo">
-        <b-field>
-          <b-input v-model="newTodo" placeholder="Add Todo" />
-        </b-field>
+        <b-input v-model="newTodo" placeholder="Add Todo" />
       </form>
     </div>
     <div class="container">
       <b-table :data="filteredTodos" striped hoverable>
         <template v-slot="todo">
           <b-table-column field="name" label="Name">
-            {{ todo.row.name }}
+            <div :class="['todo', { editing: todo.row == editedTodo }]">
+              <p class="control view" @dblclick="editTodo(todo.row)">{{ todo.row.name }}</p>
+              <input
+                class="control input edit"
+                type="text"
+                v-model="todo.row.name"
+                v-todo-focus="todo.row == editedTodo"
+                @blur="doneEdit(todo.row)"
+                @keyup.enter="doneEdit(todo.row)"
+                @keyup.esc="cancelEdit(todo.row)"
+              />
+            </div>
           </b-table-column>
           <b-table-column label="Status" centered width="120">
             <b-select v-model="todo.row.status" placeholder="Status">
@@ -52,7 +61,7 @@
             </b-select>
           </b-table-column>
           <b-table-column label="Delete" centered width="80">
-            <b-button @click="deleteTodo(todo.index)">
+            <b-button @click="removeTodo(todo.row)">
               <b-icon icon="trash" size="is-small"></b-icon>
             </b-button>
           </b-table-column>
@@ -83,11 +92,13 @@ export default {
         { code: 'done', label: 'Done' },
       ],
       todos: [
-        { name: 'Do the dishes', status: 'todo' },
-        { name: 'Take out the trash', status: 'doing' },
-        { name: 'Finish doing laundry', status: 'done' },
+        { uid: 1, name: 'Do the dishes', status: 'todo' },
+        { uid: 2, name: 'Take out the trash', status: 'doing' },
+        { uid: 3, name: 'Finish doing laundry', status: 'done' },
       ],
       newTodo: '',
+      editedTodo: null,
+      beforeEditCache: '',
       selectedStatus: '',
       searchText: '',
     };
@@ -119,14 +130,59 @@ export default {
         return;
       }
 
-      this.todos.push({ name: this.newTodo.trim(), status: 'todo' });
+      const newTodo = { uid: this.todos.length + 1, name: this.newTodo.trim(), status: 'todo' };
+      this.todos.push(newTodo);
       this.newTodo = '';
     },
-    deleteTodo(index) {
+    removeTodo(todo) {
+      const index = this.todos.findIndex(v => v.uid === todo.uid);
       this.todos.splice(index, 1);
+    },
+    editTodo(todo) {
+      this.beforeEditCache = todo.name;
+      this.editedTodo = todo;
+    },
+    doneEdit(todo) {
+      if (!this.editedTodo) {
+        return;
+      }
+      this.editedTodo = null;
+      todo.name = todo.name.trim();
+      if (!todo.name) {
+        this.removeTodo(todo);
+      }
+    },
+    cancelEdit(todo) {
+      this.editedTodo = null;
+      todo.name = this.beforeEditCache;
+    },
+  },
+  directives: {
+    'todo-focus': (el, binding) => {
+      if (binding.value) {
+        el.focus();
+      }
     },
   },
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.todo {
+  & > .view {
+    display: block;
+  }
+
+  &.editing > .view {
+    display: none;
+  }
+
+  & > .edit {
+    display: none;
+  }
+
+  &.editing > .edit {
+    display: block;
+  }
+}
+</style>
