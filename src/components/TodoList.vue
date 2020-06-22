@@ -39,13 +39,13 @@
     <div class="container">
       <b-table :data="filteredTodos" striped hoverable>
         <template v-slot="todo">
-          <b-table-column field="name" label="Name">
+          <b-table-column field="title" label="Title">
             <div :class="['todo', { editing: todo.row == editedTodo }]">
-              <p class="control view" @dblclick="editTodo(todo.row)">{{ todo.row.name }}</p>
+              <p class="control view" @dblclick="editTodo(todo.row)">{{ todo.row.title }}</p>
               <input
                 class="control input edit"
                 type="text"
-                v-model="todo.row.name"
+                v-model="todo.row.title"
                 v-todo-focus="todo.row == editedTodo"
                 @blur="doneEdit(todo.row)"
                 @keyup.enter="doneEdit(todo.row)"
@@ -92,9 +92,9 @@ export default {
         { code: 'done', label: 'Done' },
       ],
       todos: [
-        { uid: 1, name: 'Do the dishes', status: 'todo' },
-        { uid: 2, name: 'Take out the trash', status: 'doing' },
-        { uid: 3, name: 'Finish doing laundry', status: 'done' },
+        { uid: 1, title: 'Do the dishes', status: 'todo' },
+        { uid: 2, title: 'Take out the trash', status: 'doing' },
+        { uid: 3, title: 'Finish doing laundry', status: 'done' },
       ],
       newTodo: '',
       editedTodo: null,
@@ -115,7 +115,7 @@ export default {
       return this.todos.filter(todo => {
         let display = true;
         if (this.searchText !== '') {
-          display = todo.name.includes(this.searchText);
+          display = todo.title.includes(this.searchText);
         }
         if (display && this.selectedStatus !== '') {
           display = todo.status === this.selectedStatus;
@@ -130,7 +130,7 @@ export default {
         return;
       }
 
-      const newTodo = { uid: this.todos.length + 1, name: this.newTodo.trim(), status: 'todo' };
+      const newTodo = { uid: this.todos.length + 1, title: this.newTodo.trim(), status: 'todo' };
       this.todos.push(newTodo);
       this.newTodo = '';
     },
@@ -139,7 +139,7 @@ export default {
       this.todos.splice(index, 1);
     },
     editTodo(todo) {
-      this.beforeEditCache = todo.name;
+      this.beforeEditCache = todo.title;
       this.editedTodo = todo;
     },
     doneEdit(todo) {
@@ -147,14 +147,14 @@ export default {
         return;
       }
       this.editedTodo = null;
-      todo.name = todo.name.trim();
-      if (!todo.name) {
+      todo.title = todo.title.trim();
+      if (!todo.title) {
         this.removeTodo(todo);
       }
     },
     cancelEdit(todo) {
       this.editedTodo = null;
-      todo.name = this.beforeEditCache;
+      todo.title = this.beforeEditCache;
     },
   },
   directives: {
