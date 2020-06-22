@@ -86,22 +86,18 @@
 export default {
   data() {
     return {
-      statuses: [
-        { code: 'todo', label: 'Todo' },
-        { code: 'doing', label: 'Doing' },
-        { code: 'done', label: 'Done' },
-      ],
-      todos: [
-        { uid: 1, title: 'Do the dishes', status: 'todo' },
-        { uid: 2, title: 'Take out the trash', status: 'doing' },
-        { uid: 3, title: 'Finish doing laundry', status: 'done' },
-      ],
+      statuses: [],
+      todos: [],
       newTodo: '',
       editedTodo: null,
       beforeEditCache: '',
       selectedStatus: '',
       searchText: '',
     };
+  },
+  created() {
+    this.todos = this.getTodos();
+    this.statuses = this.getStatuses();
   },
   computed: {
     statusesWithAll() {
@@ -155,6 +151,20 @@ export default {
     cancelEdit(todo) {
       this.editedTodo = null;
       todo.title = this.beforeEditCache;
+    },
+    getTodos() {
+      return [
+        { uid: 1, title: 'Do the dishes', status: 'todo' },
+        { uid: 2, title: 'Take out the trash', status: 'doing' },
+        { uid: 3, title: 'Finish doing laundry', status: 'done' },
+      ];
+    },
+    getStatuses() {
+      return [
+        { code: 'todo', label: 'Todo' },
+        { code: 'doing', label: 'Doing' },
+        { code: 'done', label: 'Done' },
+      ];
     },
   },
   directives: {
