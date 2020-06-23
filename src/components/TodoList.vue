@@ -180,7 +180,7 @@ export default {
 <style scoped lang="scss">
 .todo {
   & > .view {
-    display: block;
+    display: initial;
   }
 
   &.editing > .view {
@@ -192,7 +192,7 @@ export default {
   }
 
   &.editing > .edit {
-    display: block;
+    display: initial;
   }
 }
 </style>
