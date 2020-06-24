@@ -63,7 +63,9 @@ export default {
     const { editedTodo, removeTodo, editTodo, doneEdit, cancelEdit } = useTodoListActions();
 
     return {
+      // Mutable state
       editedTodo,
+      // Functions
       removeTodo,
       editTodo,
       doneEdit,

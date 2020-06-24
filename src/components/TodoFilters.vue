@@ -55,6 +55,7 @@ export default {
     });
 
     return {
+      // Mutable state
       selectedStatus,
       searchText,
     };

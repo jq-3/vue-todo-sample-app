@@ -12,7 +12,9 @@ export default {
     const { newTodo, addTodo } = useTodoListActions();
 
     return {
+      // Mutable state
       newTodo,
+      // Function
       addTodo,
     };
   },

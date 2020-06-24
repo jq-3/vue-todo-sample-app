@@ -19,26 +19,28 @@
 </template>
 
 <script>
-import { provide } from '@vue/composition-api';
+import AddTodo from './AddTodo';
 import TodoFilters from './TodoFilters';
 import TodoTable from './TodoTable';
-import AddTodo from './AddTodo';
-import { useGetStatuses } from '../composables/use-get-statuses';
-import { useStatusStore } from '../stores/use-status-store';
 import statusKey from '../stores/use-status-key';
-import { useGetTodos } from '../composables/use-get-todos';
-import { useTodoStore } from '../stores/use-todo-store';
 import todoKey from '../stores/use-todo-key';
+import { provide } from '@vue/composition-api';
+import { useGetStatuses } from '../composables/use-get-statuses';
+import { useGetTodos } from '../composables/use-get-todos';
 import { useTodoFilter } from '../composables/use-todo-filter';
+import { useStatusStore } from '../stores/use-status-store';
+import { useTodoStore } from '../stores/use-todo-store';
 
 export default {
-  components: { TodoFilters, TodoTable, AddTodo },
+  components: { AddTodo, TodoFilters, TodoTable },
   setup() {
+    // ステータス一覧を取得してストアに格納
     const { getStatuses } = useGetStatuses();
     const statusStore = useStatusStore(getStatuses());
     const { statuses, statusesWithAll } = statusStore;
     provide(statusKey, statusStore);
 
+    // TODO一覧を取得してストアに格納
     const { getTodos } = useGetTodos();
     const todoStore = useTodoStore(getTodos());
     provide(todoKey, todoStore);
@@ -46,9 +48,12 @@ export default {
     const { filteredTodos, updateFilter } = useTodoFilter();
 
     return {
+      // Mutable state (store)
       statuses,
       statusesWithAll,
+      // computed
       filteredTodos,
+      // Function
       updateFilter,
     };
   },
