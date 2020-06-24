@@ -109,14 +109,14 @@ export default {
       }
 
       return this.todos.filter(todo => {
-        let display = true;
+        let isMatched = true;
         if (this.searchText !== '') {
-          display = todo.title.includes(this.searchText);
+          isMatched = todo.title.includes(this.searchText);
         }
-        if (display && this.selectedStatus !== '') {
-          display = todo.status === this.selectedStatus;
+        if (isMatched && this.selectedStatus !== '') {
+          isMatched = todo.status === this.selectedStatus;
         }
-        return display;
+        return isMatched;
       });
     },
   },
