@@ -1,4 +1,4 @@
-import { inject, reactive, computed, toRefs } from '@vue/composition-api';
+import { inject, reactive, computed } from '@vue/composition-api';
 import todoKey from '../stores/use-todo-key';
 
 export const useTodoFilter = () => {
@@ -25,8 +25,13 @@ export const useTodoFilter = () => {
     });
   });
 
+  const updateFilter = ({ selectedStatus, searchText }) => {
+    state.selectedStatus = selectedStatus;
+    state.searchText = searchText;
+  };
+
   return {
-    ...toRefs(state),
     filteredTodos,
+    updateFilter,
   };
 };
