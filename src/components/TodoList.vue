@@ -33,20 +33,19 @@
     </div>
     <div class="container">
       <form @submit.prevent="addTodo">
-        <b-input v-model="newTodo" placeholder="Add Todo" />
+        <b-input v-model="state.newTodo" placeholder="Add Todo" />
       </form>
     </div>
     <div class="container">
       <b-table :data="filteredTodos" striped hoverable>
         <template v-slot="todo">
           <b-table-column field="title" label="Title">
-            <div :class="['todo', { editing: todo.row == editedTodo }]">
+            <div :class="['todo', { editing: todo.row == state.editedTodo }]">
               <p class="control view" @dblclick="editTodo(todo.row)">{{ todo.row.title }}</p>
               <input
                 class="control input edit"
                 type="text"
                 v-model="todo.row.title"
-                v-todo-focus="todo.row == editedTodo"
                 @blur="doneEdit(todo.row)"
                 @keyup.enter="doneEdit(todo.row)"
                 @keyup.esc="cancelEdit(todo.row)"
@@ -83,96 +82,80 @@
 </template>
 
 <script>
+import { reactive, provide } from '@vue/composition-api';
+import { useGetStatuses } from '../composables/use-get-statuses';
+import { useStatusStore } from '../stores/use-status-store';
+import statusKey from '../stores/use-status-key';
+import { useGetTodos } from '../composables/use-get-todos';
+import { useTodoStore } from '../stores/use-todo-store';
+import todoKey from '../stores/use-todo-key';
+import { useTodoFilter } from '../composables/use-todo-filter';
+
 export default {
-  data() {
-    return {
-      statuses: [],
-      todos: [],
+  setup() {
+    const { getStatuses } = useGetStatuses();
+    const statusStore = useStatusStore(getStatuses());
+    const { statuses, statusesWithAll } = statusStore;
+    provide(statusKey, statusStore);
+
+    const { getTodos } = useGetTodos();
+    const todoStore = useTodoStore(getTodos());
+    const { todos, addTodoStore, removeTodoStore } = todoStore;
+    provide(todoKey, todoStore);
+    const { selectedStatus, searchText, filteredTodos } = useTodoFilter(todos);
+
+    const state = reactive({
       newTodo: '',
       editedTodo: null,
       beforeEditCache: '',
-      selectedStatus: '',
-      searchText: '',
+    });
+
+    const addTodo = () => {
+      if (state.newTodo.trim() === '') {
+        return;
+      }
+
+      const newTodo = { uid: todos.length + 1, title: state.newTodo.trim(), status: 'todo' };
+      addTodoStore(newTodo);
+      state.newTodo = '';
     };
-  },
-  created() {
-    this.todos = this.getTodos();
-    this.statuses = this.getStatuses();
-  },
-  computed: {
-    statusesWithAll() {
-      return [{ code: '', label: 'All' }, ...this.statuses];
-    },
-    filteredTodos() {
-      if (this.selectedStatus === '' && this.searchText === '') {
-        return this.todos;
-      }
 
-      return this.todos.filter(todo => {
-        let display = true;
-        if (this.searchText !== '') {
-          display = todo.title.includes(this.searchText);
-        }
-        if (display && this.selectedStatus !== '') {
-          display = todo.status === this.selectedStatus;
-        }
-        return display;
-      });
-    },
-  },
-  methods: {
-    addTodo() {
-      if (this.newTodo.trim() === '') {
+    const removeTodo = todo => removeTodoStore(todo);
+
+    const editTodo = todo => {
+      state.beforeEditCache = todo.title;
+      state.editedTodo = todo;
+    };
+
+    const doneEdit = todo => {
+      if (!state.editedTodo) {
         return;
       }
-
-      const newTodo = { uid: this.todos.length + 1, title: this.newTodo.trim(), status: 'todo' };
-      this.todos.push(newTodo);
-      this.newTodo = '';
-    },
-    removeTodo(todo) {
-      const index = this.todos.findIndex(v => v.uid === todo.uid);
-      this.todos.splice(index, 1);
-    },
-    editTodo(todo) {
-      this.beforeEditCache = todo.title;
-      this.editedTodo = todo;
-    },
-    doneEdit(todo) {
-      if (!this.editedTodo) {
-        return;
-      }
-      this.editedTodo = null;
+      state.editedTodo = null;
       todo.title = todo.title.trim();
       if (!todo.title) {
-        this.removeTodo(todo);
+        removeTodoStore(todo);
       }
-    },
-    cancelEdit(todo) {
-      this.editedTodo = null;
-      todo.title = this.beforeEditCache;
-    },
-    getTodos() {
-      return [
-        { uid: 1, title: 'Do the dishes', status: 'todo' },
-        { uid: 2, title: 'Take out the trash', status: 'doing' },
-        { uid: 3, title: 'Finish doing laundry', status: 'done' },
-      ];
-    },
-    getStatuses() {
-      return [
-        { code: 'todo', label: 'Todo' },
-        { code: 'doing', label: 'Doing' },
-        { code: 'done', label: 'Done' },
-      ];
-    },
-  },
-  directives: {
-    'todo-focus': (el, binding) => {
-      if (binding.value) {
-        el.focus();
-      }
-    },
+    };
+
+    const cancelEdit = todo => {
+      state.editedTodo = null;
+      todo.title = state.beforeEditCache;
+    };
+
+    return {
+      statuses,
+      statusesWithAll,
+      selectedStatus,
+      searchText,
+      filteredTodos,
+      addTodo,
+      removeTodo,
+      editTodo,
+      doneEdit,
+      cancelEdit,
+      state,
+    };
   },
 };
 </script>
