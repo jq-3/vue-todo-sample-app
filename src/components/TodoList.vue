@@ -46,7 +46,6 @@
                 class="control input edit"
                 type="text"
                 v-model="todo.row.title"
-                v-todo-focus="todo.row == editedTodo"
                 @blur="doneEdit(todo.row)"
                 @keyup.enter="doneEdit(todo.row)"
                 @keyup.esc="cancelEdit(todo.row)"
@@ -165,13 +164,6 @@ export default {
         { code: 'doing', label: 'Doing' },
         { code: 'done', label: 'Done' },
       ];
-    },
-  },
-  directives: {
-    'todo-focus': (el, binding) => {
-      if (binding.value) {
-        el.focus();
-      }
     },
   },
 };
