@@ -40,6 +40,7 @@
     </template>
   </b-table>
 </template>
+
 <script>
 import { useTodoListActions } from '../composables/use-todo-list-actions';
 

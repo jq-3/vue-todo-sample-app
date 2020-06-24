@@ -6,9 +6,7 @@
       @update-filter="updateFilter"
     />
     <div class="container">
-      <form @submit.prevent="addTodo">
-        <b-input v-model="newTodo" placeholder="Add Todo" />
-      </form>
+      <AddTodo />
     </div>
     <div class="container">
       <TodoTable
@@ -24,6 +22,7 @@
 import { provide } from '@vue/composition-api';
 import TodoFilters from './TodoFilters';
 import TodoTable from './TodoTable';
+import AddTodo from './AddTodo';
 import { useGetStatuses } from '../composables/use-get-statuses';
 import { useStatusStore } from '../stores/use-status-store';
 import statusKey from '../stores/use-status-key';
@@ -31,10 +30,9 @@ import { useGetTodos } from '../composables/use-get-todos';
 import { useTodoStore } from '../stores/use-todo-store';
 import todoKey from '../stores/use-todo-key';
 import { useTodoFilter } from '../composables/use-todo-filter';
-import { useTodoListActions } from '../composables/use-todo-list-actions';
 
 export default {
-  components: { TodoFilters, TodoTable },
+  components: { TodoFilters, TodoTable, AddTodo },
   setup() {
     const { getStatuses } = useGetStatuses();
     const statusStore = useStatusStore(getStatuses());
@@ -47,15 +45,11 @@ export default {
 
     const { filteredTodos, updateFilter } = useTodoFilter();
 
-    const { newTodo, addTodo } = useTodoListActions();
-
     return {
       statuses,
       statusesWithAll,
       filteredTodos,
       updateFilter,
-      newTodo,
-      addTodo,
     };
   },
 };
