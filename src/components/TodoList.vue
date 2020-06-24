@@ -37,7 +37,11 @@
       </form>
     </div>
     <div class="container">
-      <TodoTable :filteredTodos="filteredTodos" />
+      <TodoTable
+        :filteredTodos="filteredTodos"
+        :statuses="statuses"
+        :statusesWithAll="statusesWithAll"
+      />
     </div>
   </section>
 </template>

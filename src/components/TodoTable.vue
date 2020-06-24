@@ -41,8 +41,6 @@
   </b-table>
 </template>
 <script>
-import { inject } from '@vue/composition-api';
-import statusKey from '../stores/use-status-key';
 import { useTodoListActions } from '../composables/use-todo-list-actions';
 
 export default {
@@ -51,15 +49,19 @@ export default {
       type: Array,
       required: true,
     },
+    statuses: {
+      type: Array,
+      required: true,
+    },
+    statusesWithAll: {
+      type: Array,
+      required: true,
+    },
   },
   setup() {
-    const statusStore = inject(statusKey);
-    const { statuses, statusesWithAll } = statusStore;
     const { editedTodo, removeTodo, editTodo, doneEdit, cancelEdit } = useTodoListActions();
 
     return {
-      statuses,
-      statusesWithAll,
       editedTodo,
       removeTodo,
       editTodo,
