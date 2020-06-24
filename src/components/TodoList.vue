@@ -33,14 +33,14 @@
     </div>
     <div class="container">
       <form @submit.prevent="addTodo">
-        <b-input v-model="state.newTodo" placeholder="Add Todo" />
+        <b-input v-model="newTodo" placeholder="Add Todo" />
       </form>
     </div>
     <div class="container">
       <b-table :data="filteredTodos" striped hoverable>
         <template v-slot="todo">
           <b-table-column field="title" label="Title">
-            <div :class="['todo', { editing: todo.row == state.editedTodo }]">
+            <div :class="['todo', { editing: todo.row == editedTodo }]">
               <p class="control view" @dblclick="editTodo(todo.row)">{{ todo.row.title }}</p>
               <input
                 class="control input edit"
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { reactive, provide } from '@vue/composition-api';
+import { provide } from '@vue/composition-api';
 import { useGetStatuses } from '../composables/use-get-statuses';
 import { useStatusStore } from '../stores/use-status-store';
 import statusKey from '../stores/use-status-key';
@@ -90,6 +90,7 @@ import { useGetTodos } from '../composables/use-get-todos';
 import { useTodoStore } from '../stores/use-todo-store';
 import todoKey from '../stores/use-todo-key';
 import { useTodoFilter } from '../composables/use-todo-filter';
+import { useTodoListActions } from '../composables/use-todo-list-actions';
 
 export default {
   setup() {
@@ -100,48 +101,20 @@ export default {
 
     const { getTodos } = useGetTodos();
     const todoStore = useTodoStore(getTodos());
-    const { todos, addTodoStore, removeTodoStore } = todoStore;
     provide(todoKey, todoStore);
-    const { selectedStatus, searchText, filteredTodos } = useTodoFilter(todos);
 
-    const state = reactive({
-      newTodo: '',
-      editedTodo: null,
-      beforeEditCache: '',
-    });
+    const { selectedStatus, searchText, filteredTodos } = useTodoFilter();
 
-    const addTodo = () => {
-      if (state.newTodo.trim() === '') {
-        return;
-      }
-
-      const newTodo = { uid: todos.length + 1, title: state.newTodo.trim(), status: 'todo' };
-      addTodoStore(newTodo);
-      state.newTodo = '';
-    };
-
-    const removeTodo = todo => removeTodoStore(todo);
-
-    const editTodo = todo => {
-      state.beforeEditCache = todo.title;
-      state.editedTodo = todo;
-    };
-
-    const doneEdit = todo => {
-      if (!state.editedTodo) {
-        return;
-      }
-      state.editedTodo = null;
-      todo.title = todo.title.trim();
-      if (!todo.title) {
-        removeTodoStore(todo);
-      }
-    };
-
-    const cancelEdit = todo => {
-      state.editedTodo = null;
-      todo.title = state.beforeEditCache;
-    };
+    const {
+      newTodo,
+      editedTodo,
+      beforeEditCache,
+      addTodo,
+      removeTodo,
+      editTodo,
+      doneEdit,
+      cancelEdit,
+    } = useTodoListActions();
 
     return {
       statuses,
@@ -149,12 +122,14 @@ export default {
       selectedStatus,
       searchText,
       filteredTodos,
+      newTodo,
+      editedTodo,
+      beforeEditCache,
       addTodo,
       removeTodo,
       editTodo,
       doneEdit,
       cancelEdit,
-      state,
     };
   },
 };

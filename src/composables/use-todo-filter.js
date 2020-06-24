@@ -1,6 +1,8 @@
-import { reactive, computed, toRefs } from '@vue/composition-api';
+import { inject, reactive, computed, toRefs } from '@vue/composition-api';
+import todoKey from '../stores/use-todo-key';
 
-export const useTodoFilter = todos => {
+export const useTodoFilter = () => {
+  const todoStore = inject(todoKey);
   const state = reactive({
     selectedStatus: '',
     searchText: '',
@@ -8,10 +10,10 @@ export const useTodoFilter = todos => {
 
   const filteredTodos = computed(() => {
     if (state.selectedStatus === '' && state.searchText === '') {
-      return todos;
+      return todoStore.todos;
     }
 
-    return todos.filter(todo => {
+    return todoStore.todos.filter(todo => {
       let display = true;
       if (state.searchText !== '') {
         display = todo.title.includes(state.searchText);
